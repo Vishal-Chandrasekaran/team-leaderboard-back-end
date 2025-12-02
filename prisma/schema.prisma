@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String           @id @default(uuid()) @db.Uuid
+  avatar      String?           @db.VarChar(255)
+  name        String?           @db.VarChar(100)
+  email       String            @unique
+  role        UserRole          @default(user)
+  teamId      String?           @db.Uuid
+  password    String?           @db.VarChar(100)
+  createdAt   DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime          @updatedAt     @db.Timestamptz(6)
+  submissions UserSubmission[]
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+model Domain {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String?  @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt     @db.Timestamptz(6)
+}
+
+enum SubmissionStatus {
+  Pending                              @map("Pending")
+  Approved_Bronze                      @map("Approved - Bronze")
+  Approved_Silver                      @map("Approved - Silver")
+  Approved_Gold                        @map("Approved - Gold")
+  Rejected                             @map("Rejected")
+
+  @@map("SubmissionStatus")
+}
+
+enum SubmissionCategory {
+  Problem_Solved_Knowledge_Share       @map("Problem Solved (Knowledge Share)")
+  Reusable_Component_Identified        @map("Reusable Component Identified")
+  AI_Workflow_Enhancement              @map("AI Workflow Enhancement")
+  Exceptional_Code_Review              @map("Exceptional Code Review")
+  Mentorship_Moment                    @map("Mentorship Moment")
+  Documentation_Hero                   @map("Documentation Hero")
+
+  @@map("SubmissionCategory")
+}
+
+model UserSubmission {
+  id            String            @id @default(uuid()) @db.Uuid
+  title         String?           @db.VarChar(255)
+  description   String?
+  status        SubmissionStatus
+  category      SubmissionCategory
+  evidenceLinks String[]          @db.Text
+  userId        String            @db.Uuid
+  adminFeedback String?           @db.Text
+  createdAt     DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime          @updatedAt     @db.Timestamptz(6)
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
