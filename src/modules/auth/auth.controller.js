@@ -1,7 +1,7 @@
 import { AuthService } from './auth.service.js';
 import { MESSAGES } from '../../config/messages.js';
 import { successResponse } from '../../utils/response.util.js';
-import { generateToken } from '../../utils/jwt.util.js';
+import { generateToken, generateRefreshToken } from '../../utils/jwt.util.js';
 
 export const AuthController = {
   async signup(req, res, next) {
@@ -17,7 +17,16 @@ export const AuthController = {
     try {
       const user = await AuthService.signin(req.body);
       const token = generateToken({ id: user.id });
-      return successResponse(res, MESSAGES.LOGIN_SUCCESS, { token, user });
+      const refreshToken = generateRefreshToken({ id: user.id });
+
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      return successResponse(res, MESSAGES.LOGIN_SUCCESS, { token, refreshToken, user });
     } catch (err) {
       return next(err);
     }
