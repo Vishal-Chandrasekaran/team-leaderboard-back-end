@@ -55,5 +55,25 @@ export const AuthController = {
     } catch (err) {
       return next(err);
     }
-  }
+  },
+
+    async forgotPassword(req, res, next) {
+    try {
+      const { email } = req.body;
+      const user = await AuthService.forgotPassword(email);
+      return successResponse(res, MESSAGES.PASSWORD_RESET_REQUEST_SENT, { user });
+    } catch (err) {
+      return next(err);
+    }
+  },
+  async resetPassword(req, res, next) {
+    try {
+      const { password, token } = req.body;
+      const user = await AuthService.resetPassword(password, token);
+      return successResponse(res, MESSAGES.PASSWORD_RESET_SUCCESS, { user });
+    } catch (err) {
+      return next(err);
+    }
+  },
+
 };

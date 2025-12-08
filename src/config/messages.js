@@ -9,5 +9,7 @@ export const MESSAGES = {
   SUBMISSION_CREATED: 'Submission created successfully',
   SUBMISSION_UPDATED: 'Submission updated successfully',
   RANK_LIST_FETCHED: 'Rank list fetched successfully',
-  CATEGORY_LIST_FETCHED: 'Categories fetched successfully'
+  CATEGORY_LIST_FETCHED: 'Categories fetched successfully',
+  PASSWORD_RESET_REQUEST_SENT: 'Password reset request sent',
+  PASSWORD_RESET_SUCCESS: 'Password reset successful'
 };

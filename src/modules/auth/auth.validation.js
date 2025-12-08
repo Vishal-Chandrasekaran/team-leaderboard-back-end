@@ -12,3 +12,12 @@ export const signinSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).max(128).required(),
 });
+
+export const forgotPasswordSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+export const resetPasswordSchema = Joi.object({
+  password: Joi.string().min(8).max(128).required(),
+  token: Joi.string().required(),
+});
