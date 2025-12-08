@@ -1,5 +1,5 @@
-
 export const MESSAGES = {
+  LOGOUT_SUCCESS: 'Logged out successfully',
   USER_EXISTS: 'User already exists',
   USER_CREATED: 'User created successfully',
   LOGIN_SUCCESS: 'Login successful',
