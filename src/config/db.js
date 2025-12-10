@@ -10,7 +10,9 @@ export const prisma = globalForPrisma.prisma || new PrismaClient({
   errorFormat: 'pretty',
 });
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== 'production'){
+   globalForPrisma.prisma = prisma;
+}
 
 // Connection function with retry logic
 async function connectDatabase() {
