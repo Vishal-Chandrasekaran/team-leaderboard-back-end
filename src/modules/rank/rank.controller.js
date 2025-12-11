@@ -5,14 +5,15 @@ import {MESSAGES} from '../../config/messages.js';
 export const RankController = {
   async list(req, res, next) {
     try {
-      const {teamId, page = 1, size = 10} = req.query;
+      const {teamId, page = 1, size = 10, period} = req.query;
       const offset = (page - 1) * size;
       const limit = parseInt(size);
 
       const {leaderboard, total} = await RankService.getLeaderboard({
         teamId,
         offset,
-        limit
+        limit,
+        period
       });
       const totalPages = Math.ceil(total / limit);
 

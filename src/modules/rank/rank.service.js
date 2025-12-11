@@ -7,7 +7,27 @@ const STATUS_POINTS = {
 };
 
 export const RankService = {
-  async getLeaderboard({teamId, offset = 0, limit = 10} = {}) {
+  async getLeaderboard({teamId, offset = 0, limit = 10, period} = {}) {
+    let whereClause = {};
+    if (period && period !== 'all_time') {
+      const now = new Date();
+      let startDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+
+      if (period === 'week') {
+        const day = now.getDay();
+        const diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+        startDate.setDate(diff);
+      } else if (period === 'month') {
+        startDate.setDate(1);
+      } else if (period === 'quarter') {
+        const quarterMonth = Math.floor(now.getMonth() / 3) * 3;
+        startDate.setMonth(quarterMonth);
+        startDate.setDate(1);
+      }
+      whereClause = {createdAt: {gte: startDate}};
+    }
+
     const [users, domains] = await Promise.all([
       prisma.user.findMany({
         where: teamId ? {teamId} : undefined,
@@ -15,7 +35,10 @@ export const RankService = {
           id: true,
           name: true,
           teamId: true,
-          submissions: {select: {status: true}}
+          submissions: {
+            where: whereClause,
+            select: {status: true}
+          }
         }
       }),
       prisma.domain.findMany({select: {id: true, name: true}})
@@ -34,13 +57,13 @@ export const RankService = {
 
         user.submissions.forEach((submission) => {
           points += STATUS_POINTS[submission.status] || 0;
-          if (submission.status === 'Approved_Gold'){
+          if (submission.status === 'Approved_Gold') {
             gold++;
           }
-          if (submission.status === 'Approved_Silver'){
+          if (submission.status === 'Approved_Silver') {
             silver++;
           }
-          if (submission.status === 'Approved_Bronze'){
+          if (submission.status === 'Approved_Bronze') {
             bronze++;
           }
         });
