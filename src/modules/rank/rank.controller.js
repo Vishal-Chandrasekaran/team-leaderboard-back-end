@@ -5,7 +5,7 @@ import {MESSAGES} from '../../config/messages.js';
 export const RankController = {
   async list(req, res, next) {
     try {
-      const {teamId, page = 1, size = 10, period} = req.query;
+      const {teamId, page = 1, size = 10, period, viewMode} = req.query;
       const offset = (page - 1) * size;
       const limit = parseInt(size);
 
@@ -13,7 +13,8 @@ export const RankController = {
         teamId,
         offset,
         limit,
-        period
+        period,
+        viewMode
       });
       const totalPages = Math.ceil(total / limit);
 
