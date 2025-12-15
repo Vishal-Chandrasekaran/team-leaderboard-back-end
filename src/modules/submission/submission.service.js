@@ -1,12 +1,12 @@
-import { SubmissionModel } from './submission.model.js';
-import { UserModel } from '../user/user.model.js';
+import {SubmissionModel} from './submission.model.js';
+import {UserModel} from '../user/user.model.js';
 
 const STATUS_MAP = {
   Pending: 'Pending',
   'Approved - Bronze': 'Approved_Bronze',
   'Approved - Silver': 'Approved_Silver',
   'Approved - Gold': 'Approved_Gold',
-  Rejected: 'Rejected',
+  Rejected: 'Rejected'
 };
 
 const CATEGORY_MAP = {
@@ -15,7 +15,7 @@ const CATEGORY_MAP = {
   'AI Workflow Enhancement': 'AI_Workflow_Enhancement',
   'Exceptional Code Review': 'Exceptional_Code_Review',
   'Mentorship Moment': 'Mentorship_Moment',
-  'Documentation Hero': 'Documentation_Hero',
+  'Documentation Hero': 'Documentation_Hero'
 };
 
 function normalizeEnum(value, map) {
@@ -24,7 +24,7 @@ function normalizeEnum(value, map) {
 
 export const SubmissionService = {
   async create(payload) {
-    const { userId } = payload;
+    const {userId} = payload;
     const user = await UserModel.findById(userId);
     if (!user) {
       const err = new Error('User not found for provided userId');
@@ -36,11 +36,11 @@ export const SubmissionService = {
     const submission = await SubmissionModel.create({
       ...payload,
       status: normalizeEnum(payload.status, STATUS_MAP),
-      category: normalizeEnum(payload.category, CATEGORY_MAP),
+      category: normalizeEnum(payload.category, CATEGORY_MAP)
     });
     return submission;
   },
-  async listByUser(userId) {
+  async listByUser(userId, {offset, limit} = {}) {
     const user = await UserModel.findById(userId);
     if (!user) {
       const err = new Error('User not found for provided userId');
@@ -48,11 +48,13 @@ export const SubmissionService = {
       err.status = 404;
       throw err;
     }
-    return SubmissionModel.findByUser(userId);
+    return SubmissionModel.findByUser(userId, {offset, limit});
   },
-  async listAll(statusFilter = 'Pending') {
-    const normalizedStatus = statusFilter ? normalizeEnum(statusFilter, STATUS_MAP) : undefined;
-    return SubmissionModel.findAll(normalizedStatus);
+  async listAll(statusFilter = 'Pending', {offset, limit} = {}) {
+    const normalizedStatus = statusFilter
+      ? normalizeEnum(statusFilter, STATUS_MAP)
+      : undefined;
+    return SubmissionModel.findAll(normalizedStatus, {offset, limit});
   },
   async update(submissionId, payload, actor) {
     if (actor?.role !== 'admin') {
@@ -80,6 +82,5 @@ export const SubmissionService = {
 
     const updated = await SubmissionModel.update(submissionId, data);
     return updated;
-  },
+  }
 };
-
