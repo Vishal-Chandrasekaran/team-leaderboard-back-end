@@ -22,13 +22,17 @@ export const SubmissionController = {
       const offset = (page - 1) * size;
       const limit = parseInt(size);
 
-      if (scope === 'all') {
-        const {submissions, total} = await SubmissionService.listAll(status, {
-          offset,
-          limit
-        });
+      if (scope === 'all' || scope === 'pending') {
+        const filterStatus = scope === 'pending' ? 'Pending' : null;
+        const {submissions, total} = await SubmissionService.listAll(
+          filterStatus,
+          {
+            offset,
+            limit
+          }
+        );
         const totalPages = Math.ceil(total / limit);
-        return successResponse(res, 'All submissions fetched successfully', {
+        return successResponse(res, 'Submissions fetched successfully', {
           submissions,
           meta: {
             totalCount: total,
